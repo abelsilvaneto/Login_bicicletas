@@ -10,6 +10,7 @@ const conn = require('./db/conn')
 // relacionamentos para poder trabalhar os relacionamentos
 // require('./models/rel')
 
+const authMiddleware = require('./middleware/auth.middleware')
 const ciclistaController = require('./controller/ciclista.controller')
 const authController = require('./controller/auth.controller')
 
@@ -19,10 +20,18 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 app.use(cors())
 
-// Rotas Públicas
+// ------- Rotas Públicas ------
 app.post('/ciclista', ciclistaController.cadastrar)
 app.post('/login', authController.login)
 
+// ----- Middleware que verifica se tem o token ---------
+app.use(authMiddleware)
+// ------- Rotas Privadas -------
+
+app.get('/ciclistas', ciclistaController.listar)
+app.get('/ciclista/buscarNome/:nome', ciclistaController.consultarNome)
+app.get('/ciclista/:id', ciclistaController.consultarID)
+app.delete('/ciclista/:id', ciclistaController.apagar)
 
 
 app.get('/', (req,res)=>{
